@@ -25,7 +25,7 @@
 <script>
   import _take from "lodash/take";
   import io from "socket.io-client";
-  import {Events} from "../../socket/constants";
+  import {Events, SOCKET_URI} from "../../socket/constants";
   import Lobby from "./HostLobby";
   import Loader from "../../components/Loader";
   import HostMain from "./HostMain";
@@ -77,7 +77,7 @@
       }
     },
     created() {
-      this.socket = io("http://localhost:9090");
+      this.socket = io(SOCKET_URI);
       this.socket.on("connect", () => {
         this.socket.emit(Events.Sent.CREATE_GAME, (gamePin) => {
           this.gamePin = gamePin;

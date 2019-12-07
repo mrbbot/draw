@@ -14,7 +14,7 @@
 <!--suppress JSUnresolvedVariable -->
 <script>
   import io from "socket.io-client";
-  import {Events} from "../../socket/constants";
+  import {Events, SOCKET_URI} from "../../socket/constants";
   import FullHeight from "../../components/FullHeight";
   import IconDetail from "../../components/IconDetail";
   import Loader from "../../components/Loader";
@@ -74,7 +74,7 @@
     created() {
       this.name = localStorage.getItem("draw-name");
 
-      this.socket = io("http://localhost:9090");
+      this.socket = io(SOCKET_URI);
       this.socket.on("connect", () => {
         const joinEvent = new JoinEvent();
         joinEvent.setName(this.name);
