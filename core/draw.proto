@@ -1,0 +1,65 @@
+syntax = "proto3";
+
+package draw;
+
+option java_package = "dev.mrbbot.draw";
+option java_outer_classname = "DrawProtos";
+
+message JoinEvent {
+  string pin = 1;
+  string uuid = 2;
+  string name = 3;
+}
+
+message StartGameEvent {
+  int32 numberRounds = 1;
+  int32 roundSeconds = 2;
+}
+
+message PlayerRoundStartEvent {
+  string uuid = 1;
+  int32 roundNumber = 2;
+  int32 roundSeconds = 3;
+  repeated string words = 4;
+}
+
+enum Colour {
+  RED = 0;
+  ORANGE = 1;
+  YELLOW = 2;
+  GREEN = 3;
+  BLUE = 4;
+  PURPLE = 5;
+  PINK = 6;
+  PALE = 7;
+  BROWN = 8;
+  BLACK = 9;
+  GREY = 10;
+  WHITE = 11;
+}
+
+message DrawEvent {
+  enum Type {
+    BRUSH = 0;
+    FILL = 1;
+    ERASER = 2;
+  }
+
+  Type type = 1;
+  Colour colour = 2;
+  int32 size = 3;
+  int32 fromX = 4;
+  int32 fromY = 5;
+  int32 toX = 6;
+  int32 toY = 7;
+}
+
+message ScoreUpdateEvent {
+  string uuid = 1;
+  int32 scoreChange = 2;
+}
+
+message GuessEvent {
+  string uuid = 1;
+  string guess = 2;
+}

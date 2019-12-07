@@ -1,0 +1,44 @@
+@import "~bulma/sass/utilities/_all"
+
+$container-offset: (12 * $gap)
+
+@import "~bulma"
+@import "~bulma-extensions/bulma-divider/src/sass/index"
+@import "~bulma-extensions/bulma-slider/src/sass/index"
+
+@import "utilities"
+
+html
+  overflow: auto
+
+@keyframes rainbow-background-color
+  @include rainbow-keyframes(background-color)
+
+@keyframes rainbow-color
+  @include rainbow-keyframes(color)
+
+.has-background-rainbow
+  animation: rainbow-background-color 5s linear 0s infinite
+
+.has-text-rainbow
+  animation: rainbow-color 5s linear 0s infinite
+
+.has-secondary-rainbow
+  animation: rainbow-color 5s linear 0s infinite
+  --fa-primary-color: black
+
+.has-elevation
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22)
+
+.container.is-small
+  max-width: 400px
+
+.displayed-word
+  position: absolute
+  top: 0.3rem
+  left: 0
+  right: 0
+  text-align: center
+  letter-spacing: 0.1em
+  pointer-events: none
+  z-index: 100
