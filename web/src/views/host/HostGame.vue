@@ -5,15 +5,25 @@
             :seconds-remaining="secondsRemaining"
             :guesses="guesses" :overlay-shown="overlayShown">
     <template slot="overlay">
-      <div class="small-container">
-        <h1 v-if="currentWord" class="title has-text-white">The word was {{currentWord}}!</h1>
-        <h1 class="title has-text-white">{{currentDrawerName}} is choosing a word...</h1>
+      <div class="small-container has-text-centered">
+        <template v-if="currentWord">
+          <h1 v-if="currentWord" class="title has-text-white">The word was {{currentWord}}!</h1>
+          <div class="player-list">
+            <h1 v-for="player of topFivePlayers" class="subtitle has-text-white for-top-player has-text-left">
+              <span class="name">{{player.name}}</span>
+              <span class="score">{{player.score}}</span>
+            </h1>
+          </div>
+        </template>
+        <h1 class="title has-text-white" v-if="completed">{{winnerMessage}}</h1>
+        <h1 class="title has-text-white" v-else>{{currentDrawerName}} is choosing a word...</h1>
       </div>
     </template>
   </HostMain>
 </template>
 
 <script>
+  import _take from "lodash/take";
   import io from "socket.io-client";
   import {Events} from "../../socket/constants";
   import Lobby from "./HostLobby";
@@ -39,12 +49,31 @@
         secondsRemaining: 0,
         guesses: [],
         overlayShown: false,
-        firstRound: true
+        firstRound: true,
+        completed: false
       }
     },
     computed: {
       currentDrawerName() {
         return this.nameForUUID(this.currentDrawerUUID);
+      },
+      topFivePlayers() {
+        const players = [...this.players];
+        players.sort((a, b) => {
+          // Sort by score first, only lexicographically if equal
+          if (a.score === b.score) {
+            return a.uuid === b.uuid ? 0 : (a.uuid < b.uuid ? -1 : 1);
+          }
+          return b.score - a.score;
+        });
+        return _take(players, 5);
+      },
+      winnerMessage() {
+        const topFivePlayers = this.topFivePlayers;
+        if(topFivePlayers && topFivePlayers.length > 0) {
+          return `${topFivePlayers[0].name} has won the game!`;
+        }
+        return "";
       }
     },
     created() {
@@ -85,7 +114,6 @@
         this.stopTimers();
         this.currentDrawerUUID = roundStartEvent.getUuid();
         this.displayedWord = this.currentWord;
-        this.currentWord = "";
         this.roundLength = roundStartEvent.getRoundseconds();
         this.roundNumber = roundStartEvent.getRoundnumber();
         this.secondsRemaining = 10; // 10 seconds for selecting a word
@@ -148,8 +176,17 @@
       });
       this.socket.on(Events.Received.COMPLETE, () => {
         console.log(Events.Received.COMPLETE);
-        //TODO: show top 5 players (this should be done anyways at the end of each round!) & stop timers
-        alert("Complete!");
+        this.stopTimers();
+        this.completed = true;
+        this.currentDrawerUUID = "";
+        this.displayedWord = this.currentWord;
+        this.guesses = [];
+        this.overlayShown = true;
+        this.players = this.players.map(player => {
+          player.guessedWord = false;
+          player.currentDrawer = false;
+          return player;
+        });
       });
     },
     beforeDestroy() {
@@ -217,3 +254,15 @@
     }
   }
 </script>
+
+<style lang="sass">
+  .player-list
+    width: 100%
+    margin: 1rem 0
+    .for-top-player
+      display: flex
+      flex-direction: row
+      width: 100%
+      .name
+        flex-grow: 1
+</style>

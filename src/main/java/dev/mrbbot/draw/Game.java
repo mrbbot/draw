@@ -47,6 +47,8 @@ public class Game implements Runnable {
   private int totalRounds;
   // Maximum number of seconds someone has to draw their word and allow people to guess it
   private int roundLengthSeconds;
+  // Whether the game has been completed
+  private boolean gameComplete = false;
 
   // Client associated with the player currently drawing
   private SocketIOClient currentDrawer;
@@ -182,8 +184,10 @@ public class Game implements Runnable {
       // There is a chance that this player was the current drawer, if this is the case, don't do anything:
       // connected players can still guess for the remaining time
 
-      // Update the host
-      host.sendEvent(Events.Sent.PLAYER_LEFT, client.getSessionId().toString());
+      // Update the host (only if the game hasn't been completed)
+      if (!gameComplete) {
+        host.sendEvent(Events.Sent.PLAYER_LEFT, client.getSessionId().toString());
+      }
 
       // Check if all players have now guessed correctly now that a player has disconnected
       checkIfAllGuessedCorrectly();
@@ -247,7 +251,7 @@ public class Game implements Runnable {
   }
 
   public void stop() {
-    if(thread != null) {
+    if (thread != null) {
       logger.info("Stopping game...");
       thread.interrupt();
     }
@@ -281,7 +285,7 @@ public class Game implements Runnable {
 
           // 1. Get the next player to draw
           currentDrawer = roundNextPlayerQueue.poll();
-          if(currentDrawer == null) continue;
+          if (currentDrawer == null) continue;
 
           logger.info("{} is the next drawer", currentDrawer.getSessionId());
 
@@ -334,6 +338,7 @@ public class Game implements Runnable {
 
       // Mark the game as complete, showing the winners
       logger.info("All rounds complete! Sending complete event...");
+      gameComplete = true;
       server.getRoomOperations(pin).sendEvent(Events.Sent.COMPLETE);
     } catch (InterruptedException e) {
       logger.info("Game thread interrupted!");

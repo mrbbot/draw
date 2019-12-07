@@ -140,6 +140,9 @@
         const guessEvent = new GuessEvent();
         guessEvent.setUuid(this.socket.id);
         guessEvent.setGuess(guess);
+        if(guess === this.wordToDraw) {
+          this.state = State.GUESSED_WORD;
+        }
         this.socket.binary(true).emit(Events.Sent.GUESS, guessEvent.serializeBinary());
       },
       onDraw(drawEvent) {
