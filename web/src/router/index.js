@@ -5,10 +5,16 @@ import Landing from "../views/Landing";
 import HostGame from "../views/host/HostGame";
 import PlayerGame from "../views/player/PlayerGame";
 import PlayerGameRedirect from "../views/player/PlayerGameRedirect";
+import InteractiveDrawCanvas from "../components/InteractiveDrawCanvas";
 
 Vue.use(VueRouter);
 
 const routes = [
+  {
+    path: "/idc",
+    name: "interactive-draw-canvas",
+    component: InteractiveDrawCanvas
+  },
   {
     path: "/",
     name: "landing",

@@ -102,11 +102,12 @@
           drawEvent.setColour(this.selectedColour);
         }
 
+        drawEvent.setTox(thisX);
+        drawEvent.setToy(thisY);
+
         if (this.selectedTool === DrawEvent.Type.BRUSH || this.selectedTool === DrawEvent.Type.ERASER) {
           // TODO: allow size to be changed
           drawEvent.setSize(10);
-          drawEvent.setTox(thisX);
-          drawEvent.setToy(thisY);
           if (this.lastX !== -1 && this.lastY !== -1) {
             drawEvent.setFromx(this.lastX);
             drawEvent.setFromy(this.lastY);
