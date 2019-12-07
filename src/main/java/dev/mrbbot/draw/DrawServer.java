@@ -8,11 +8,13 @@ import com.google.protobuf.InvalidProtocolBufferException;
 import dev.mrbbot.draw.DrawProtos.*;
 import dev.mrbbot.draw.SocketConstants.*;
 
+import io.github.cdimascio.dotenv.Dotenv;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Random;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -31,12 +33,12 @@ public class DrawServer {
   // Map of game pins to games
   private final Map<String, Game> games;
 
-  public DrawServer() {
+  public DrawServer(Dotenv dotenv) {
     // Initialise Socket.IO server
     Configuration config = new Configuration();
     config.setHostname("localhost");
-    config.setPort(9090);
-    config.setOrigin("http://localhost:8080");
+    config.setPort(Integer.parseInt(Objects.requireNonNull(dotenv.get("DRAW_PORT"))));
+    config.setOrigin(dotenv.get("DRAW_ORIGIN"));
     config.setRandomSession(true);
     config.setMaxFramePayloadLength(1024 * 1024);
     config.setMaxHttpContentLength(1024 * 1024);
@@ -189,6 +191,6 @@ public class DrawServer {
   // Main entry point for the program
   public static void main(String[] args) {
     // Create a new server and start it
-    new DrawServer().start();
+    new DrawServer(Dotenv.load()).start();
   }
 }
