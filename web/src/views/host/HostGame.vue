@@ -25,6 +25,7 @@
           <div class="player-list">
             <h1
               v-for="player of topFivePlayers"
+              :key="player.uuid"
               class="subtitle has-text-white for-top-player has-text-left"
             >
               <span class="name">{{ player.name }}</span>
@@ -32,9 +33,16 @@
             </h1>
           </div>
         </template>
-        <h1 class="title has-text-white" v-if="completed">
-          {{ winnerMessage }}
-        </h1>
+        <template v-if="completed">
+          <h1 class="title has-text-white">
+            {{ winnerMessage }}
+          </h1>
+          <p>
+            <router-link class="button is-dark has-background-rainbow" to="/">
+              Play again?
+            </router-link>
+          </p>
+        </template>
         <h1 class="title has-text-white" v-else>
           {{ currentDrawerName }} is choosing a word...
         </h1>
@@ -51,6 +59,7 @@ import Lobby from "./HostLobby";
 import Loader from "../../components/Loader";
 import HostMain from "./HostMain";
 
+import { draw } from "../../socket/proto";
 const {
   JoinEvent,
   StartGameEvent,
@@ -58,7 +67,7 @@ const {
   DrawEvent,
   ScoreUpdateEvent,
   GuessEvent
-} = require("../../socket/draw_pb");
+} = draw;
 
 export default {
   name: "host-game",
@@ -118,13 +127,13 @@ export default {
       this.$router.replace("/");
     });
     this.socket.on(Events.Received.PLAYER_JOINED, rawJoinEvent => {
-      const joinEvent = JoinEvent.deserializeBinary(rawJoinEvent);
-      console.log(Events.Received.PLAYER_JOINED, joinEvent.toObject());
+      const joinEvent = JoinEvent.decode(new Uint8Array(rawJoinEvent));
+      console.log(Events.Received.PLAYER_JOINED, joinEvent.toJSON());
       const newPlayers = [
         ...this.players,
         {
-          uuid: joinEvent.getUuid(),
-          name: joinEvent.getName(),
+          uuid: joinEvent.uuid,
+          name: joinEvent.name,
           score: 0,
           guessedWord: false,
           currentDrawer: false
@@ -142,17 +151,17 @@ export default {
       );
     });
     this.socket.on(Events.Received.ROUND_START, rawRoundStartEvent => {
-      const roundStartEvent = PlayerRoundStartEvent.deserializeBinary(
-        rawRoundStartEvent
+      const roundStartEvent = PlayerRoundStartEvent.decode(
+        new Uint8Array(rawRoundStartEvent)
       );
-      console.log(Events.Received.ROUND_START, roundStartEvent.toObject());
+      console.log(Events.Received.ROUND_START, roundStartEvent.toJSON());
 
       // Reset game for new round
       this.stopTimers();
-      this.currentDrawerUUID = roundStartEvent.getUuid();
+      this.currentDrawerUUID = roundStartEvent.uuid;
       this.displayedWord = this.currentWord;
-      this.roundLength = roundStartEvent.getRoundseconds();
-      this.roundNumber = roundStartEvent.getRoundnumber();
+      this.roundLength = roundStartEvent.roundSeconds;
+      this.roundNumber = roundStartEvent.roundNumber;
       this.secondsRemaining = 10; // 10 seconds for selecting a word
       this.guesses = [];
       this.overlayShown = true;
@@ -175,15 +184,15 @@ export default {
       this.startUnmaskLettersTimer();
     });
     this.socket.on(Events.Received.DRAW, rawDrawEvent => {
-      const drawEvent = DrawEvent.deserializeBinary(rawDrawEvent);
-      //console.log(Events.Received.DRAW, drawEvent.toObject());
+      const drawEvent = DrawEvent.decode(new Uint8Array(rawDrawEvent));
+      //console.log(Events.Received.DRAW, drawEvent.toJSON());
       this.$refs.main.$refs.canvas.handleDrawEvent(drawEvent);
     });
     this.socket.on(Events.Received.GUESS, rawGuessEvent => {
-      const guessEvent = GuessEvent.deserializeBinary(rawGuessEvent);
-      console.log(Events.Received.GUESS, guessEvent.toObject());
-      const uuid = guessEvent.getUuid();
-      const guess = guessEvent.getGuess();
+      const guessEvent = GuessEvent.decode(new Uint8Array(rawGuessEvent));
+      console.log(Events.Received.GUESS, guessEvent.toJSON());
+      const uuid = guessEvent.uuid;
+      const guess = guessEvent.guess;
       const correct = guess === this.currentWord;
       this.guesses = [
         ...this.guesses,
@@ -203,12 +212,12 @@ export default {
       }
     });
     this.socket.on(Events.Received.SCORE_UPDATE, rawScoreUpdateEvent => {
-      const scoreUpdateEvent = ScoreUpdateEvent.deserializeBinary(
-        rawScoreUpdateEvent
+      const scoreUpdateEvent = ScoreUpdateEvent.decode(
+        new Uint8Array(rawScoreUpdateEvent)
       );
-      console.log(Events.Received.SCORE_UPDATE, scoreUpdateEvent.toObject());
-      const uuid = scoreUpdateEvent.getUuid();
-      const scoreChange = scoreUpdateEvent.getScorechange();
+      console.log(Events.Received.SCORE_UPDATE, scoreUpdateEvent.toJSON());
+      const uuid = scoreUpdateEvent.uuid;
+      const scoreChange = scoreUpdateEvent.scoreChange;
       this.players = this.players.map(player => {
         if (player.uuid === uuid) {
           player.score += scoreChange;
@@ -239,13 +248,17 @@ export default {
       this.loading = true;
       this.waitingForPlayers = false;
       const startGameEvent = new StartGameEvent();
-      startGameEvent.setNumberrounds(totalRounds);
-      startGameEvent.setRoundseconds(roundLength);
+      startGameEvent.numberRounds = totalRounds;
+      startGameEvent.roundSeconds = roundLength;
       this.socket
         .binary(true)
-        .emit(Events.Sent.START_GAME, startGameEvent.serializeBinary(), () => {
-          this.loading = false;
-        });
+        .emit(
+          Events.Sent.START_GAME,
+          StartGameEvent.encode(startGameEvent).finish(),
+          () => {
+            this.loading = false;
+          }
+        );
     },
     startTimeRemainingTimer() {
       this.timeRemainingIntervalHandle = setInterval(() => {

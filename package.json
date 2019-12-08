@@ -5,7 +5,10 @@
   "scripts": {
     "serve": "cd web && vue-cli-service serve",
     "build": "cd web && vue-cli-service build",
-    "lint": "cd web && vue-cli-service lint"
+    "lint": "cd web && vue-cli-service lint",
+    "proto:all": "npm run proto:java && npm run proto:js",
+    "proto:java": "protoc -I=. --java_out=./src/main/java/ ./draw.proto",
+    "proto:js": "pbjs --target static-module --wrap es6 ./draw.proto --lint eslint-disable --out ./web/src/socket/proto.js"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.25",
@@ -15,9 +18,9 @@
     "bulma": "^0.8.0",
     "bulma-extensions": "^6.2.7",
     "core-js": "^3.4.3",
-    "google-protobuf": "^3.11.1",
     "lodash": "^4.17.15",
     "normalize.css": "^8.0.1",
+    "protobufjs": "~6.8.8",
     "socket.io-client": "^2.3.0",
     "vue": "^2.6.10",
     "vue-router": "^3.1.3"
@@ -35,6 +38,7 @@
     "node-sass": "^4.12.0",
     "prettier": "^1.19.1",
     "sass-loader": "^8.0.0",
+    "vue-cli-plugin-webpack-bundle-analyzer": "^2.0.0",
     "vue-template-compiler": "^2.6.10"
   },
   "eslintConfig": {
@@ -46,7 +50,9 @@
       "plugin:vue/essential",
       "@vue/prettier"
     ],
-    "rules": {},
+    "rules": {
+      "no-console": "warn"
+    },
     "parserOptions": {
       "parser": "babel-eslint"
     }

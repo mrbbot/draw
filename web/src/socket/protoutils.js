@@ -1,4 +1,5 @@
-const { DrawEvent, Colour } = require(".//draw_pb");
+import { draw } from "./proto";
+const { DrawEvent, Colour } = draw;
 
 export const drawEventTypes = [DrawEvent.Type.BRUSH, DrawEvent.Type.FILL];
 

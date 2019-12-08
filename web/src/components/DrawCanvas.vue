@@ -9,8 +9,9 @@
 </template>
 
 <script>
-const { DrawEvent } = require("../socket/draw_pb");
-import { hexForColour, colourHexes } from "../socket/protobuf_utils";
+import { draw } from "../socket/proto";
+const { DrawEvent } = draw;
+import { hexForColour, colourHexes } from "../socket/protoutils";
 
 const canvasWidth = 600;
 const canvasHeight = 450;
@@ -76,18 +77,18 @@ export default {
       this.ctx.fillRect(0, 0, canvasWidth, canvasHeight);
     },
     handleDrawEvent(/** @type {DrawEvent} */ drawEvent) {
-      const type = drawEvent.getType();
-      const x2 = drawEvent.getTox();
-      const y2 = drawEvent.getToy();
+      const type = drawEvent.type;
+      const x2 = drawEvent.toX;
+      const y2 = drawEvent.toY;
       if (type === DrawEvent.Type.FILL) {
-        const hex = hexForColour(drawEvent.getColour());
+        const hex = hexForColour(drawEvent.colour);
         const { r, g, b } = hexToRGB(hex);
         this.floodFill(x2, y2, r, g, b);
       } else {
-        const colour = hexForColour(drawEvent.getColour());
-        const size = drawEvent.getSize();
-        const x1 = drawEvent.getFromx() || x2;
-        const y1 = drawEvent.getFromy() || y2;
+        const colour = hexForColour(drawEvent.colour);
+        const size = drawEvent.size;
+        const x1 = drawEvent.fromX || x2;
+        const y1 = drawEvent.fromY || y2;
 
         this.ctx.lineWidth = size;
         this.ctx.strokeStyle = colour;

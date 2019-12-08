@@ -19,21 +19,20 @@
 <script>
 import io from "socket.io-client";
 import { Events, SOCKET_URI } from "../../socket/constants";
-import FullHeight from "../../components/FullHeight";
-import IconDetail from "../../components/IconDetail";
 import Loader from "../../components/Loader";
 import PlayerWaiting from "./PlayerWaiting";
 import PlayerWordChoice from "./PlayerWordChoice";
 import InteractiveDrawCanvas from "../../components/InteractiveDrawCanvas";
 import PlayerGuess from "./PlayerGuess";
 
+import { draw } from "../../socket/proto";
 const {
   JoinEvent,
   PlayerRoundStartEvent,
-  DrawEvent,
   ScoreUpdateEvent,
-  GuessEvent
-} = require("../../socket/draw_pb");
+  GuessEvent,
+  DrawEvent
+} = draw;
 
 const State = {
   WAITING_FOR_PLAYERS: 0,
@@ -51,9 +50,7 @@ export default {
     InteractiveDrawCanvas,
     PlayerWordChoice,
     PlayerWaiting,
-    Loader,
-    IconDetail,
-    FullHeight
+    Loader
   },
   data() {
     return {
@@ -95,19 +92,23 @@ export default {
     this.socket = io(SOCKET_URI);
     this.socket.on("connect", () => {
       const joinEvent = new JoinEvent();
-      joinEvent.setName(this.name);
-      joinEvent.setPin(this.gamePin);
+      joinEvent.name = this.name;
+      joinEvent.pin = this.gamePin;
       this.socket
         .binary(true)
-        .emit(Events.Sent.JOIN_GAME, joinEvent.serializeBinary(), gameFound => {
-          if (gameFound) {
-            this.loading = false;
-          } else {
-            window.landingMessageIcon = "times";
-            window.landingMessageText = "Game not found!";
-            this.$router.replace("/");
+        .emit(
+          Events.Sent.JOIN_GAME,
+          JoinEvent.encode(joinEvent).finish(),
+          gameFound => {
+            if (gameFound) {
+              this.loading = false;
+            } else {
+              window.landingMessageIcon = "times";
+              window.landingMessageText = "Game not found!";
+              this.$router.replace("/");
+            }
           }
-        });
+        );
     });
     this.socket.on("disconnect", () => {
       window.landingMessageIcon = "wifi-slash";
@@ -115,12 +116,12 @@ export default {
       this.$router.replace("/");
     });
     this.socket.on(Events.Received.ROUND_START, rawRoundStartEvent => {
-      const roundStartEvent = PlayerRoundStartEvent.deserializeBinary(
-        rawRoundStartEvent
+      const roundStartEvent = PlayerRoundStartEvent.decode(
+        new Uint8Array(rawRoundStartEvent)
       );
-      console.log(Events.Received.ROUND_START, roundStartEvent.toObject());
-      this.wordsToChooseFrom = roundStartEvent.getWordsList();
-      if (roundStartEvent.getUuid() === this.socket.id) {
+      console.log(Events.Received.ROUND_START, roundStartEvent.toJSON());
+      this.wordsToChooseFrom = roundStartEvent.words;
+      if (roundStartEvent.uuid === this.socket.id) {
         this.state = State.CHOOSING_WORD;
       } else {
         this.state = State.WAITING_FOR_WORD_CHOICE;
@@ -136,12 +137,12 @@ export default {
       }
     });
     this.socket.on(Events.Received.SCORE_UPDATE, rawScoreUpdateEvent => {
-      const scoreUpdateEvent = ScoreUpdateEvent.deserializeBinary(
-        rawScoreUpdateEvent
+      const scoreUpdateEvent = ScoreUpdateEvent.decode(
+        new Uint8Array(rawScoreUpdateEvent)
       );
-      console.log(Events.Received.SCORE_UPDATE, scoreUpdateEvent.toObject());
-      if (scoreUpdateEvent.getUuid() === this.socket.id) {
-        this.score += scoreUpdateEvent.getScorechange();
+      console.log(Events.Received.SCORE_UPDATE, scoreUpdateEvent.toJSON());
+      if (scoreUpdateEvent.uuid === this.socket.id) {
+        this.score += scoreUpdateEvent.scoreChange;
       }
     });
     this.socket.on(Events.Received.COMPLETE, () => {
@@ -162,20 +163,20 @@ export default {
     onGuess(guess) {
       console.log("onGuess", guess);
       const guessEvent = new GuessEvent();
-      guessEvent.setUuid(this.socket.id);
-      guessEvent.setGuess(guess);
+      guessEvent.uuid = this.socket.id;
+      guessEvent.guess = guess;
       if (guess === this.wordToDraw) {
         this.state = State.GUESSED_WORD;
       }
       this.socket
         .binary(true)
-        .emit(Events.Sent.GUESS, guessEvent.serializeBinary());
+        .emit(Events.Sent.GUESS, GuessEvent.encode(guessEvent).finish());
     },
     onDraw(drawEvent) {
       // console.log("onDraw", drawEvent.toObject());
       this.socket
         .binary(true)
-        .emit(Events.Sent.DRAW, drawEvent.serializeBinary());
+        .emit(Events.Sent.DRAW, DrawEvent.encode(drawEvent).finish());
     }
   }
 };

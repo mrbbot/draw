@@ -64,13 +64,14 @@
 import _throttle from "lodash/throttle";
 import DrawCanvas from "./DrawCanvas";
 
-const { DrawEvent, Colour } = require("../socket/draw_pb");
+import { draw } from "../socket/proto";
+const { DrawEvent, Colour } = draw;
 import {
   drawEventTypes,
   colours,
   iconForDrawEventType,
   hexForColour
-} from "../socket/protobuf_utils";
+} from "../socket/protoutils";
 import TwoSidebars from "./TwoSidebars";
 
 const sizes = ["sm", "lg", "2x"];
@@ -159,16 +160,16 @@ export default {
       const thisY = Math.round(y);
 
       const drawEvent = new DrawEvent();
-      drawEvent.setType(this.selectedTool);
-      drawEvent.setColour(this.selectedColour);
-      drawEvent.setTox(thisX);
-      drawEvent.setToy(thisY);
+      drawEvent.type = this.selectedTool;
+      drawEvent.colour = this.selectedColour;
+      drawEvent.toX = thisX;
+      drawEvent.toY = thisY;
 
       if (this.selectedTool === DrawEvent.Type.BRUSH) {
-        drawEvent.setSize(sizesMap[this.selectedSize]);
+        drawEvent.size = sizesMap[this.selectedSize];
         if (this.lastX !== -1 && this.lastY !== -1) {
-          drawEvent.setFromx(this.lastX);
-          drawEvent.setFromy(this.lastY);
+          drawEvent.fromX = this.lastX;
+          drawEvent.fromY = this.lastY;
         }
       }
 
