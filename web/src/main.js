@@ -9,7 +9,8 @@ import { library } from "@fortawesome/fontawesome-svg-core";
 import {
   faTimes,
   faCheck,
-  faWifiSlash
+  faWifiSlash,
+  faCircle
 } from "@fortawesome/pro-solid-svg-icons";
 import {
   faPaintBrush,
@@ -18,7 +19,15 @@ import {
 } from "@fortawesome/pro-duotone-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 
-library.add(faTimes, faCheck, faWifiSlash, faPaintBrush, faFillDrip, faSyncAlt);
+library.add(
+  faTimes,
+  faCheck,
+  faWifiSlash,
+  faPaintBrush,
+  faFillDrip,
+  faSyncAlt,
+  faCircle
+);
 Vue.component("FontAwesomeIcon", FontAwesomeIcon);
 
 Vue.config.productionTip = false;

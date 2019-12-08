@@ -8,9 +8,11 @@
     @dimensions="updateStoredDimensions"
   >
     <template slot="left">
+      <!--Tools-->
       <div
         class="icon-button"
         v-for="tool of tools"
+        :key="tool"
         :class="{ ['is-active']: tool === selectedTool }"
         @click="selectedTool = tool"
       >
@@ -19,6 +21,19 @@
           size="2x"
           fixed-width
         />
+      </div>
+      <!--Sizes-->
+      <div
+        class="icon-button for-size"
+        v-for="size of sizes"
+        :key="size"
+        :style="{ opacity: selectedTool === tools[0] ? 1 : 0.5 }"
+        :class="{
+          ['is-active']: size === selectedSize && selectedTool === tools[0]
+        }"
+        @click="selectedSize = size"
+      >
+        <FontAwesomeIcon :icon="['fas', 'circle']" :size="size" fixed-width />
       </div>
     </template>
     <template v-slot:default="{ dimensions }">
@@ -36,6 +51,7 @@
       <div
         class="colour"
         v-for="colour of colours"
+        :key="colour"
         :class="{ ['is-selected']: colour === selectedColour }"
         :style="{ backgroundColor: hexForColour(colour) }"
         @click="selectedColour = colour"
@@ -57,6 +73,13 @@ import {
 } from "../socket/protobuf_utils";
 import TwoSidebars from "./TwoSidebars";
 
+const sizes = ["sm", "lg", "2x"];
+const sizesMap = {
+  sm: 10,
+  lg: 20,
+  "2x": 40
+};
+
 export default {
   name: "interactive-draw-canvas",
   components: { TwoSidebars, DrawCanvas },
@@ -64,6 +87,8 @@ export default {
     return {
       tools: drawEventTypes,
       selectedTool: DrawEvent.Type.BRUSH,
+      sizes: sizes,
+      selectedSize: sizes[0],
       colours: colours,
       selectedColour: Colour.RED,
       storedDimensions: { top: 0, left: 0, width: 0, height: 0 }
@@ -140,8 +165,7 @@ export default {
       drawEvent.setToy(thisY);
 
       if (this.selectedTool === DrawEvent.Type.BRUSH) {
-        // TODO: allow size to be changed
-        drawEvent.setSize(10);
+        drawEvent.setSize(sizesMap[this.selectedSize]);
         if (this.lastX !== -1 && this.lastY !== -1) {
           drawEvent.setFromx(this.lastX);
           drawEvent.setFromy(this.lastY);
@@ -173,7 +197,12 @@ export default {
     display: flex
     align-items: center
     justify-content: center
-    transition: background-color linear 0.15s
+    transition: background-color linear 0.15s, opacity linear 0.15s
+    &.is-active.for-size
+      path
+        fill: var(--fa-secondary-color)
+        opacity: 0.6
+        transition: fill linear 0.15s, opacity linear 0.15s
     @media (hover: hover)
       &:hover
         background-color: rgba(0, 0, 0, 0.075)
