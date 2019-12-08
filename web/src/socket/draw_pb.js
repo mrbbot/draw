@@ -931,8 +931,7 @@ proto.draw.DrawEvent.serializeBinaryToWriter = function(message, writer) {
  */
 proto.draw.DrawEvent.Type = {
   BRUSH: 0,
-  FILL: 1,
-  ERASER: 2
+  FILL: 1
 };
 
 /**

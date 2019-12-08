@@ -42,7 +42,6 @@ message DrawEvent {
   enum Type {
     BRUSH = 0;
     FILL = 1;
-    ERASER = 2;
   }
 
   Type type = 1;

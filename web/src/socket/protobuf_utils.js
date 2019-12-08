@@ -1,15 +1,10 @@
-const {DrawEvent, Colour} = require(".//draw_pb");
+const { DrawEvent, Colour } = require(".//draw_pb");
 
-export const drawEventTypes = [
-  DrawEvent.Type.BRUSH,
-  DrawEvent.Type.FILL,
-  DrawEvent.Type.ERASER
-];
+export const drawEventTypes = [DrawEvent.Type.BRUSH, DrawEvent.Type.FILL];
 
 export const drawEventTypeIcons = {
   [DrawEvent.Type.BRUSH]: "paint-brush",
-  [DrawEvent.Type.FILL]: "fill-drip",
-  [DrawEvent.Type.ERASER]: "eraser"
+  [DrawEvent.Type.FILL]: "fill-drip"
 };
 
 export const colours = [
@@ -42,5 +37,6 @@ export const colourHexes = {
   [Colour.WHITE]: "#FFFFFF"
 };
 
-export const iconForDrawEventType = (drawEventType) => drawEventTypeIcons[drawEventType];
-export const hexForColour = (colour) => colourHexes[colour];
+export const iconForDrawEventType = drawEventType =>
+  drawEventTypeIcons[drawEventType];
+export const hexForColour = colour => colourHexes[colour];

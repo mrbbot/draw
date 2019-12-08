@@ -2731,10 +2731,6 @@ public final class DrawProtos {
        * <code>FILL = 1;</code>
        */
       FILL(1),
-      /**
-       * <code>ERASER = 2;</code>
-       */
-      ERASER(2),
       UNRECOGNIZED(-1),
       ;
 
@@ -2746,10 +2742,6 @@ public final class DrawProtos {
        * <code>FILL = 1;</code>
        */
       public static final int FILL_VALUE = 1;
-      /**
-       * <code>ERASER = 2;</code>
-       */
-      public static final int ERASER_VALUE = 2;
 
 
       public final int getNumber() {
@@ -2778,7 +2770,6 @@ public final class DrawProtos {
         switch (value) {
           case 0: return BRUSH;
           case 1: return FILL;
-          case 2: return ERASER;
           default: return null;
         }
       }
@@ -5019,19 +5010,19 @@ public final class DrawProtos {
       "tGameEvent\022\024\n\014numberRounds\030\001 \001(\005\022\024\n\014roun" +
       "dSeconds\030\002 \001(\005\"_\n\025PlayerRoundStartEvent\022" +
       "\014\n\004uuid\030\001 \001(\t\022\023\n\013roundNumber\030\002 \001(\005\022\024\n\014ro" +
-      "undSeconds\030\003 \001(\005\022\r\n\005words\030\004 \003(\t\"\274\001\n\tDraw" +
+      "undSeconds\030\003 \001(\005\022\r\n\005words\030\004 \003(\t\"\260\001\n\tDraw" +
       "Event\022\"\n\004type\030\001 \001(\0162\024.draw.DrawEvent.Typ" +
       "e\022\034\n\006colour\030\002 \001(\0162\014.draw.Colour\022\014\n\004size\030" +
       "\003 \001(\005\022\r\n\005fromX\030\004 \001(\005\022\r\n\005fromY\030\005 \001(\005\022\013\n\003t" +
-      "oX\030\006 \001(\005\022\013\n\003toY\030\007 \001(\005\"\'\n\004Type\022\t\n\005BRUSH\020\000" +
-      "\022\010\n\004FILL\020\001\022\n\n\006ERASER\020\002\"5\n\020ScoreUpdateEve" +
-      "nt\022\014\n\004uuid\030\001 \001(\t\022\023\n\013scoreChange\030\002 \001(\005\")\n" +
-      "\nGuessEvent\022\014\n\004uuid\030\001 \001(\t\022\r\n\005guess\030\002 \001(\t" +
-      "*\211\001\n\006Colour\022\007\n\003RED\020\000\022\n\n\006ORANGE\020\001\022\n\n\006YELL" +
-      "OW\020\002\022\t\n\005GREEN\020\003\022\010\n\004BLUE\020\004\022\n\n\006PURPLE\020\005\022\010\n" +
-      "\004PINK\020\006\022\010\n\004PALE\020\007\022\t\n\005BROWN\020\010\022\t\n\005BLACK\020\t\022" +
-      "\010\n\004GREY\020\n\022\t\n\005WHITE\020\013B\035\n\017dev.mrbbot.drawB" +
-      "\nDrawProtosb\006proto3"
+      "oX\030\006 \001(\005\022\013\n\003toY\030\007 \001(\005\"\033\n\004Type\022\t\n\005BRUSH\020\000" +
+      "\022\010\n\004FILL\020\001\"5\n\020ScoreUpdateEvent\022\014\n\004uuid\030\001" +
+      " \001(\t\022\023\n\013scoreChange\030\002 \001(\005\")\n\nGuessEvent\022" +
+      "\014\n\004uuid\030\001 \001(\t\022\r\n\005guess\030\002 \001(\t*\211\001\n\006Colour\022" +
+      "\007\n\003RED\020\000\022\n\n\006ORANGE\020\001\022\n\n\006YELLOW\020\002\022\t\n\005GREE" +
+      "N\020\003\022\010\n\004BLUE\020\004\022\n\n\006PURPLE\020\005\022\010\n\004PINK\020\006\022\010\n\004P" +
+      "ALE\020\007\022\t\n\005BROWN\020\010\022\t\n\005BLACK\020\t\022\010\n\004GREY\020\n\022\t\n" +
+      "\005WHITE\020\013B\035\n\017dev.mrbbot.drawB\nDrawProtosb" +
+      "\006proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,

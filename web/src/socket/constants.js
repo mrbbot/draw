@@ -20,4 +20,7 @@ export const Events = {
   }
 };
 
-export const SOCKET_URI = process.env.NODE_ENV === "development" ? "http://localhost:9090" : "https://draw-server.mrbbot.dev";
+export const SOCKET_URI =
+  process.env.NODE_ENV === "development"
+    ? "http://localhost:9090"
+    : "https://draw-server.mrbbot.dev";
