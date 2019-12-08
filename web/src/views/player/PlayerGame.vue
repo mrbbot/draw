@@ -119,7 +119,7 @@ export default {
       const roundStartEvent = PlayerRoundStartEvent.decode(
         new Uint8Array(rawRoundStartEvent)
       );
-      console.log(Events.Received.ROUND_START, roundStartEvent.toJSON());
+      // console.log(Events.Received.ROUND_START, roundStartEvent.toJSON());
       this.wordsToChooseFrom = roundStartEvent.words;
       if (roundStartEvent.uuid === this.socket.id) {
         this.state = State.CHOOSING_WORD;
@@ -128,7 +128,7 @@ export default {
       }
     });
     this.socket.on(Events.Received.WORD_SELECTED, selectedWord => {
-      console.log(Events.Received.WORD_SELECTED, selectedWord);
+      // console.log(Events.Received.WORD_SELECTED, selectedWord);
       this.wordToDraw = selectedWord;
       if (this.state === State.CHOOSING_WORD) {
         this.state = State.DRAWING_WORD;
@@ -140,13 +140,13 @@ export default {
       const scoreUpdateEvent = ScoreUpdateEvent.decode(
         new Uint8Array(rawScoreUpdateEvent)
       );
-      console.log(Events.Received.SCORE_UPDATE, scoreUpdateEvent.toJSON());
+      // console.log(Events.Received.SCORE_UPDATE, scoreUpdateEvent.toJSON());
       if (scoreUpdateEvent.uuid === this.socket.id) {
         this.score += scoreUpdateEvent.scoreChange;
       }
     });
     this.socket.on(Events.Received.COMPLETE, () => {
-      console.log(Events.Received.COMPLETE);
+      // console.log(Events.Received.COMPLETE);
       window.landingMessageIcon = "check";
       window.landingMessageText = "Game finished!";
       this.$router.replace("/");
@@ -157,11 +157,11 @@ export default {
   },
   methods: {
     onSelectWord(word) {
-      console.log("onSelectWord", word);
+      // console.log("onSelectWord", word);
       this.socket.emit(Events.Sent.SELECT_WORD, word);
     },
     onGuess(guess) {
-      console.log("onGuess", guess);
+      // console.log("onGuess", guess);
       const guessEvent = new GuessEvent();
       guessEvent.uuid = this.socket.id;
       guessEvent.guess = guess;

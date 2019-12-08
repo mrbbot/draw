@@ -38,7 +38,11 @@
       </h2>
       <h2 class="subtitle">Guesses</h2>
       <div class="guesses" ref="guesses">
-        <p v-for="guess in guesses" :class="{ 'is-correct': guess.correct }">
+        <p
+          v-for="(guess, i) in guesses"
+          :key="`${i}-${guess.name}-${guess.guess}`"
+          :class="{ 'is-correct': guess.correct }"
+        >
           <span v-if="guess.correct">{{ guess.name }} guessed the word!</span>
           <span v-else>{{ guess.name }}> {{ guess.guess }}</span>
         </p>

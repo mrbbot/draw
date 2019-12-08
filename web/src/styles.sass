@@ -6,10 +6,19 @@ $container-offset: (12 * $gap)
 @import "~bulma-extensions/bulma-divider/src/sass/index"
 @import "~bulma-extensions/bulma-slider/src/sass/index"
 
-@import "utilities"
-
 html
   overflow: auto
+
+$colours: #FF0000, #FF6A00, #FFD800, #00FF00, #0094FF, #4800FF, #FF00DC
+
+@mixin rainbow-keyframes($property)
+  @for $i from 1 through length($colours)
+    $colour: nth($colours, $i)
+    #{100 / length($colours) * ($i - 1)}%
+      #{$property}: $colour
+  100%
+    #{$property}: nth($colours, 1)
+
 
 @keyframes rainbow-background-color
   @include rainbow-keyframes(background-color)

@@ -128,7 +128,7 @@ export default {
     });
     this.socket.on(Events.Received.PLAYER_JOINED, rawJoinEvent => {
       const joinEvent = JoinEvent.decode(new Uint8Array(rawJoinEvent));
-      console.log(Events.Received.PLAYER_JOINED, joinEvent.toJSON());
+      // console.log(Events.Received.PLAYER_JOINED, joinEvent.toJSON());
       const newPlayers = [
         ...this.players,
         {
@@ -145,7 +145,7 @@ export default {
       this.players = newPlayers;
     });
     this.socket.on(Events.Received.PLAYER_LEFT, disconnectingUuid => {
-      console.log(Events.Received.PLAYER_LEFT, disconnectingUuid);
+      // console.log(Events.Received.PLAYER_LEFT, disconnectingUuid);
       this.players = this.players.filter(
         player => player.uuid !== disconnectingUuid
       );
@@ -154,7 +154,7 @@ export default {
       const roundStartEvent = PlayerRoundStartEvent.decode(
         new Uint8Array(rawRoundStartEvent)
       );
-      console.log(Events.Received.ROUND_START, roundStartEvent.toJSON());
+      // console.log(Events.Received.ROUND_START, roundStartEvent.toJSON());
 
       // Reset game for new round
       this.stopTimers();
@@ -173,7 +173,7 @@ export default {
       this.startTimeRemainingTimer();
     });
     this.socket.on(Events.Received.WORD_SELECTED, selectedWord => {
-      console.log(Events.Received.WORD_SELECTED, selectedWord);
+      // console.log(Events.Received.WORD_SELECTED, selectedWord);
       this.$refs.main.$refs.canvas.clear();
       this.overlayShown = false;
       this.currentWord = selectedWord;
@@ -190,7 +190,7 @@ export default {
     });
     this.socket.on(Events.Received.GUESS, rawGuessEvent => {
       const guessEvent = GuessEvent.decode(new Uint8Array(rawGuessEvent));
-      console.log(Events.Received.GUESS, guessEvent.toJSON());
+      // console.log(Events.Received.GUESS, guessEvent.toJSON());
       const uuid = guessEvent.uuid;
       const guess = guessEvent.guess;
       const correct = guess === this.currentWord;
@@ -215,7 +215,7 @@ export default {
       const scoreUpdateEvent = ScoreUpdateEvent.decode(
         new Uint8Array(rawScoreUpdateEvent)
       );
-      console.log(Events.Received.SCORE_UPDATE, scoreUpdateEvent.toJSON());
+      // console.log(Events.Received.SCORE_UPDATE, scoreUpdateEvent.toJSON());
       const uuid = scoreUpdateEvent.uuid;
       const scoreChange = scoreUpdateEvent.scoreChange;
       this.players = this.players.map(player => {
@@ -226,7 +226,7 @@ export default {
       });
     });
     this.socket.on(Events.Received.COMPLETE, () => {
-      console.log(Events.Received.COMPLETE);
+      // console.log(Events.Received.COMPLETE);
       this.stopTimers();
       this.completed = true;
       this.currentDrawerUUID = "";
