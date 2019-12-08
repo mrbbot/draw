@@ -34,7 +34,7 @@
     data() {
       return {
         rawRounds: "3",
-        rawRoundLength: "10"
+        rawRoundLength: "60"
       }
     },
     props: {

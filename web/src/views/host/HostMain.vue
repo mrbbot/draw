@@ -68,11 +68,15 @@
       }
     },
     mounted() {
-      this.scrollGuessToBottom();
+      this.$watch("guesses", this.scrollGuessToBottom, {immediate: true});
     },
     methods: {
       scrollGuessToBottom() {
-        this.$refs.guesses.scrollTop = this.$refs.guesses.scrollHeight;
+        window.requestAnimationFrame(() => {
+          window.requestAnimationFrame(() => {
+            this.$refs.guesses.scrollTop = this.$refs.guesses.scrollHeight;
+          });
+        });
       }
     }
   }
