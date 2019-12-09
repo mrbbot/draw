@@ -5,8 +5,8 @@
     >
       <div class="hero-body">
         <div class="game-pin has-elevation">
-          <span class="base">{{ host }}/</span
-          ><span class="pin">{{ gamePin }}</span>
+          <span class="base">{{ host }}/</span>
+          <span class="pin">{{ gamePin }}</span>
         </div>
       </div>
     </section>
@@ -58,6 +58,10 @@ export default {
       required: true
     }
   },
+  created() {
+    this.rawRounds = localStorage.getItem("draw-rounds") || "3";
+    this.rawRoundLength = localStorage.getItem("draw-round-length") || "60";
+  },
   computed: {
     host() {
       return window.location.host;
@@ -75,6 +79,8 @@ export default {
   methods: {
     startGame() {
       if (!this.startDisabled) {
+        localStorage.setItem("draw-rounds", this.rawRounds);
+        localStorage.setItem("draw-round-length", this.rawRoundLength);
         this.$emit("start", {
           totalRounds: this.rounds,
           roundLength: this.roundLength
@@ -94,6 +100,7 @@ export default {
       font-size: 3rem
       font-weight: bold
       padding: 1rem 2rem
+      user-select: text
 
       .base
         opacity: 0.6

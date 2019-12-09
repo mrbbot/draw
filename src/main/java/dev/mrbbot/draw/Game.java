@@ -25,7 +25,7 @@ public class Game implements Runnable {
   // Maximum possible score increase per round
   private final static double MAX_ROUND_SCORE = 500;
   // Maximum number of seconds someone can take to select a word before it is done automatically
-  private final static int MAX_WORD_SELECT_SECONDS = 10;
+  private final static int MAX_WORD_SELECT_SECONDS = 15;
 
   // Logger for this game (prefixed with game pin)
   private final Logger logger;
@@ -300,7 +300,7 @@ public class Game implements Runnable {
           logger.info("Generated {} as random words, sending round start and waiting for word selection...", words);
           sendBinaryEventToAll(Events.Sent.ROUND_START, startEventBuilder.build().toByteArray());
 
-          // 3. Wait for the current player to select a word (or select the middle one after 10 seconds)
+          // 3. Wait for the current player to select a word (or select the middle one after MAX_WORD_SELECT_SECONDS seconds)
           String selectedWord = words.get(1);
           wordSelectionFuture = new CompletableFuture<String>().completeOnTimeout(selectedWord, MAX_WORD_SELECT_SECONDS, TimeUnit.SECONDS);
           try {

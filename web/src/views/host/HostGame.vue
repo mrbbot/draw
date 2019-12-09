@@ -162,9 +162,9 @@ export default {
       this.displayedWord = this.currentWord;
       this.roundLength = roundStartEvent.roundSeconds;
       this.roundNumber = roundStartEvent.roundNumber;
-      this.secondsRemaining = 10; // 10 seconds for selecting a word
-      this.guesses = [];
+      this.secondsRemaining = 15; // seconds for selecting a word
       this.overlayShown = true;
+      this.guesses = [];
       this.players = this.players.map(player => {
         player.guessedWord = false;
         player.currentDrawer = player.uuid === this.currentDrawerUUID;
@@ -176,6 +176,12 @@ export default {
       // console.log(Events.Received.WORD_SELECTED, selectedWord);
       this.$refs.main.$refs.canvas.clear();
       this.overlayShown = false;
+      this.guesses = [];
+      this.players = this.players.map(player => {
+        player.guessedWord = false;
+        player.currentDrawer = player.uuid === this.currentDrawerUUID;
+        return player;
+      });
       this.currentWord = selectedWord;
       this.displayedWord = this.maskWord(selectedWord);
       this.stopTimers();
