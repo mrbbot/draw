@@ -16,6 +16,11 @@ const routes = [
     component: InteractiveDrawCanvas
   },
   {
+    path: "/slides",
+    name: "slides",
+    component: () => import("../slides/Slides")
+  },
+  {
     path: "/",
     name: "landing",
     component: Landing

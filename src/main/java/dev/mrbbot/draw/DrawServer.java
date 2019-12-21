@@ -5,19 +5,19 @@ import com.corundumstudio.socketio.Configuration;
 import com.corundumstudio.socketio.SocketIOClient;
 import com.corundumstudio.socketio.SocketIOServer;
 import com.google.protobuf.InvalidProtocolBufferException;
-import dev.mrbbot.draw.DrawProtos.*;
-import dev.mrbbot.draw.SocketConstants.*;
-
+import dev.mrbbot.draw.DrawProtos.GuessEvent;
+import dev.mrbbot.draw.DrawProtos.JoinEvent;
+import dev.mrbbot.draw.DrawProtos.StartGameEvent;
+import dev.mrbbot.draw.SocketConstants.Events;
+import dev.mrbbot.draw.SocketConstants.Keys;
 import io.github.cdimascio.dotenv.Dotenv;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Random;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 public class DrawServer {
   // Numbers of random digits for game pins
@@ -28,10 +28,8 @@ public class DrawServer {
 
   private final SocketIOServer io;
 
-  // Lock for games map
-  private final ReadWriteLock gamesLock;
   // Map of game pins to games
-  private final Map<String, Game> games;
+  private final ConcurrentMap<String, Game> games;
 
   public DrawServer(Dotenv dotenv) {
     // Initialise Socket.IO server
@@ -54,9 +52,8 @@ public class DrawServer {
     io.addEventListener(Events.Received.DRAW, byte[].class, this::onDraw);
     io.addEventListener(Events.Received.GUESS, byte[].class, this::onGuess);
 
-    // Initialise games map and lock
-    gamesLock = new ReentrantReadWriteLock();
-    games = new HashMap<>();
+    // Initialise games map
+    games = new ConcurrentHashMap<>();
   }
 
   private void onConnect(SocketIOClient client) {
@@ -68,19 +65,14 @@ public class DrawServer {
 
     // Check if this client is associated with a game, if they are, disconnect them from it
     String gamePin = client.get(Keys.GAME);
-    gamesLock.writeLock().lock();
-    try {
-      if (gamePin != null && games.containsKey(gamePin)) {
-        // On disconnect will return true if this client was the host, in that case, remove the game from
-        // the list. Otherwise, remove the game if there are no longer any clients connected to it.
-        if (games.get(gamePin).onDisconnect(client) || io.getRoomOperations(gamePin).getClients().size() == 0) {
-          games.get(gamePin).stop();
-          games.remove(gamePin);
-          LOGGER.info("Removed \"{}\" from games map! ({} game(s) remaining)", gamePin, games.size());
-        }
+    if (gamePin != null && games.containsKey(gamePin)) {
+      // On disconnect will return true if this client was the host, in that case, remove the game from
+      // the list. Otherwise, remove the game if there are no longer any clients connected to it.
+      if (games.get(gamePin).onDisconnect(client) || io.getRoomOperations(gamePin).getClients().size() == 0) {
+        games.get(gamePin).stop();
+        games.remove(gamePin);
+        LOGGER.info("Removed \"{}\" from games map! ({} game(s) remaining)", gamePin, games.size());
       }
-    } finally {
-      gamesLock.writeLock().unlock();
     }
   }
 
@@ -100,16 +92,11 @@ public class DrawServer {
   // Handler for game creation request
   private void onCreateGame(SocketIOClient client, byte[] data, AckRequest ackRequest) {
     String pin;
-    gamesLock.writeLock().lock();
-    try {
-      // Generate a random pin for the game
-      pin = generateRandomPin();
-      // Create the game (associating the creating client as the host) and store it in the games map
-      Game game = new Game(io, pin, client);
-      games.put(pin, game);
-    } finally {
-      gamesLock.writeLock().unlock();
-    }
+    // Generate a random pin that's not already being used
+    pin = generateRandomPin();
+    // Create the game (associating the creating client as the host) and store it in the games map
+    Game game = new Game(io, pin, client);
+    games.put(pin, game);
     // Send the pin in the ack request
     ackRequest.sendAckData(pin);
   }
@@ -119,12 +106,7 @@ public class DrawServer {
     if (pin == null) {
       return null;
     }
-    gamesLock.readLock().lock();
-    try {
-      return games.get(pin);
-    } finally {
-      gamesLock.readLock().unlock();
-    }
+    return games.get(pin);
   }
 
   // Handler for players joining a game
