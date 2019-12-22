@@ -123,7 +123,7 @@ export default {
       this.wordsToChooseFrom = roundStartEvent.words;
       if (roundStartEvent.uuid === this.socket.id) {
         this.state = State.CHOOSING_WORD;
-        this.vibrate([200, 200]);
+        this.vibrate([500, 250, 500]);
       } else {
         this.state = State.WAITING_FOR_WORD_CHOICE;
       }
@@ -135,7 +135,7 @@ export default {
         this.state = State.DRAWING_WORD;
       } else {
         this.state = State.GUESSING_WORD;
-        this.vibrate(200);
+        this.vibrate(250);
       }
     });
     this.socket.on(Events.Received.SCORE_UPDATE, rawScoreUpdateEvent => {
