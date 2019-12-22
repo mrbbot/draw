@@ -1,3 +1,5 @@
+/* eslint-disable no-console */
+
 //https://tech.chitgoks.com/2012/09/13/convert-string-to-bytes-in-javascript/
 function stringToBytes(str) {
   let ch,
