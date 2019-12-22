@@ -9,7 +9,7 @@
       <h2 class="subtitle">Players</h2>
       <div
         class="player"
-        v-for="player in players"
+        v-for="player in sortedPlayers"
         :key="player.uuid"
         :class="{
           'is-drawer': player.currentDrawer,
@@ -84,6 +84,19 @@ export default {
       default: false
     }
   },
+  computed: {
+    sortedPlayers() {
+      const players = [...this.players];
+      players.sort((a, b) => {
+        if (a.currentDrawer) return -1;
+        if (b.currentDrawer) return 1;
+        if (a.guessedWord && !b.guessedWord) return -1;
+        if (b.guessedWord && !a.guessedWord) return 1;
+        return b.score - a.score;
+      });
+      return players;
+    }
+  },
   mounted() {
     this.$watch("guesses", this.scrollGuessToBottom, { immediate: true });
   },
@@ -115,6 +128,7 @@ $sidebar-border: 1px solid #DDDDDD
         padding: 0.35rem
         border-top: $sidebar-border
         display: flex
+        font-size: 1.25rem
 
         &.is-drawer
           background-color: #b5fffd
@@ -158,6 +172,7 @@ $sidebar-border: 1px solid #DDDDDD
 
         p
           width: 100%
+          font-size: 1.25rem
 
           &.is-correct
             font-weight: bold

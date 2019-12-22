@@ -106,18 +106,22 @@ export default {
     }
   },
   computed: {
+    trimmedName() {
+      return this.name.trim();
+    },
     joinDisabled() {
       return (
         this.gamePin.length !== 6 ||
         isNaN(parseInt(this.gamePin)) ||
-        this.name === ""
+        this.trimmedName.length === 0 ||
+        this.trimmedName.length > 20
       );
     }
   },
   methods: {
     joinGame() {
       if (!this.joinDisabled) {
-        localStorage.setItem("draw-name", this.name);
+        localStorage.setItem("draw-name", this.trimmedName);
         this.$router.push(`/game/${this.gamePin}`);
       }
     }

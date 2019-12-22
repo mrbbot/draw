@@ -41,7 +41,7 @@ export default {
   methods: {
     onGuess() {
       if (this.guess !== "") {
-        this.$emit("guess", this.guess.toLowerCase());
+        this.$emit("guess", this.guess.toLowerCase().trim());
         this.guess = "";
       }
     },
