@@ -13,6 +13,7 @@ import dev.mrbbot.draw.SocketConstants.Keys;
 import io.github.cdimascio.dotenv.Dotenv;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import spark.Spark;
 
 import java.util.Objects;
 import java.util.Random;
@@ -171,7 +172,10 @@ public class DrawServer {
 
   // Main entry point for the program
   public static void main(String[] args) {
+    Spark.port(Integer.parseInt(Objects.requireNonNull(System.getenv("PORT"))));
+    Spark.get("/", (req, res) -> "Java Index");
+    Spark.get("/hello", (req, res) -> "Hello World");
     // Create a new server and start it
-    new DrawServer(Dotenv.load()).start();
+    //new DrawServer(Dotenv.load()).start();
   }
 }
