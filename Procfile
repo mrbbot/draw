@@ -1,1 +1,1 @@
-web: java -jar target/*.jar
+web: java -jar target/drawing-1.0-SNAPSHOT.jar
