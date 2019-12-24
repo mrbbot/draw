@@ -5,6 +5,7 @@
   "scripts": {
     "serve": "cd web && vue-cli-service serve",
     "build": "cd web && vue-cli-service build",
+    "heroku-postbuild": "echo 'Skipping NodeJS build...'",
     "lint": "cd web && vue-cli-service lint",
     "proto:all": "npm run proto:java && npm run proto:js",
     "proto:java": "protoc -I=. --java_out=./src/main/java/ ./draw.proto",
