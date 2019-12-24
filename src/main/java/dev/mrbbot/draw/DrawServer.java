@@ -34,7 +34,6 @@ public class DrawServer {
   public DrawServer(Dotenv dotenv) {
     // Initialise Socket.IO server
     Configuration config = new Configuration();
-    config.setHostname("localhost");
     config.setPort(Integer.parseInt(Objects.requireNonNull(dotenv.get("PORT"))));
     config.setOrigin(dotenv.get("DRAW_ORIGIN"));
     config.setRandomSession(true);
