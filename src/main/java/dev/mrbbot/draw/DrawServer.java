@@ -20,6 +20,10 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 public class DrawServer {
+  // Stats aspects
+  public static final String ASPECT_CONNECTIONS = "connections";
+  public static final String ASPECT_GAMES = "games";
+
   // Numbers of random digits for game pins
   private static final int GAME_PIN_LENGTH = 6;
 
@@ -53,14 +57,18 @@ public class DrawServer {
 
     // Initialise games map
     games = new ConcurrentHashMap<>();
+    Stats.gauge(ASPECT_CONNECTIONS, 0);
+    Stats.gauge(ASPECT_GAMES, 0);
   }
 
   private void onConnect(SocketIOClient client) {
     LOGGER.info("Client {} connected!", client.getSessionId());
+    Stats.gauge(ASPECT_CONNECTIONS, io.getAllClients().size());
   }
 
   private void onDisconnect(SocketIOClient client) {
     LOGGER.info("Client {} disconnected!", client.getSessionId());
+    Stats.gauge(ASPECT_CONNECTIONS, io.getAllClients().size());
 
     // Check if this client is associated with a game, if they are, disconnect them from it
     String gamePin = client.get(Keys.GAME);
@@ -68,8 +76,8 @@ public class DrawServer {
       // On disconnect will return true if this client was the host, in that case, remove the game from
       // the list. Otherwise, remove the game if there are no longer any clients connected to it.
       if (games.get(gamePin).onDisconnect(client) || io.getRoomOperations(gamePin).getClients().size() == 0) {
-        games.get(gamePin).stop();
-        games.remove(gamePin);
+        games.remove(gamePin).stop();
+        Stats.gauge(ASPECT_GAMES, games.size());
         LOGGER.info("Removed \"{}\" from games map! ({} game(s) remaining)", gamePin, games.size());
       }
     }
@@ -96,6 +104,7 @@ public class DrawServer {
     // Create the game (associating the creating client as the host) and store it in the games map
     Game game = new Game(io, pin, client);
     games.put(pin, game);
+    Stats.gauge(ASPECT_GAMES, games.size());
     // Send the pin in the ack request
     ackRequest.sendAckData(pin);
   }

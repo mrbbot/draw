@@ -27,6 +27,12 @@ public class Game implements Runnable {
   // Maximum number of seconds someone can take to select a word before it is done automatically
   private final static int MAX_WORD_SELECT_SECONDS = 15;
 
+  // Stats stuff
+  private final static String ASPECT_GAME_TIME = "gametime";
+  private final static String ASPECT_ROUND_TIME = "roundtime";
+  private final static String ASPECT_DRAW_EVENTS = "drawevents";
+  private int drawEventCount = 0;
+
   // Logger for this game (prefixed with game pin)
   private final Logger logger;
   // Reference to Socket.IO server from DrawServer
@@ -228,6 +234,11 @@ public class Game implements Runnable {
     // logger.info("{} {} event received: ({}, {}) -> ({}, {}) @ {}x", e.getColour(), e.getType(), e.getFromX(), e.getFromY(), e.getToX(), e.getToY(), e.getSize());
     // Forward draw events onto the host to be displayed
     host.sendEvent(Events.Sent.DRAW, (Object) rawDrawEvent);
+    // Send draw increment every 1/10th of the time
+    if(++drawEventCount >= 10) {
+      drawEventCount = 0;
+      Stats.count(ASPECT_DRAW_EVENTS, 1, 0.1);
+    }
   }
 
   // Handler for when a player makes a guess
@@ -270,6 +281,8 @@ public class Game implements Runnable {
   // Executor for the game thread
   @Override
   public void run() {
+    // Start timer for game
+    Stats.Timer gameTimer = Stats.time(ASPECT_GAME_TIME);
     try {
       // While there are still rounds to be played...
       while (currentRound <= totalRounds) {
@@ -277,6 +290,9 @@ public class Game implements Runnable {
 
         // While there are still players that need to draw this round...
         while (roundNextPlayerQueue.size() > 0) {
+          // Start timer for round
+          Stats.Timer roundTimer = Stats.time(ASPECT_ROUND_TIME);
+
           // 0. Reset round states
           drawingStartInstant = null;
           currentWord = null;
@@ -327,6 +343,9 @@ public class Game implements Runnable {
           // 5. Update the score of the drawer based on how many people guessed correctly
           logger.info("Round complete! Updating score of drawer...");
           updateScore(currentDrawer, MAX_ROUND_SCORE * playersGuessedCorrectly.get() / guessingPlayersAtRoundStart.get());
+
+          // Record round time
+          roundTimer.done();
         }
 
         logger.info("All players drawn this round, adding them all back to the queue...");
@@ -342,6 +361,9 @@ public class Game implements Runnable {
       server.getRoomOperations(pin).sendEvent(Events.Sent.COMPLETE);
     } catch (InterruptedException e) {
       logger.info("Game thread interrupted!");
+    } finally {
+      // Record game time
+      gameTimer.done();
     }
   }
 }
