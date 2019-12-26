@@ -7,8 +7,8 @@ import com.timgroup.statsd.StatsDClientException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.net.MalformedURLException;
-import java.net.URL;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 public final class Stats {
   public static class Timer {
@@ -36,11 +36,11 @@ public final class Stats {
       String urlSpec = System.getenv("STATSD_URL");
       try {
         // Try to parse the URL and connect to statsd
-        URL url = new URL(urlSpec);
-        INSTANCE = new NonBlockingStatsDClient("draw", url.getHost(), url.getPort());
+        URI uri = new URI(urlSpec);
+        INSTANCE = new NonBlockingStatsDClient("draw", uri.getHost(), uri.getPort());
         LOGGER.info("Connected to statsd!");
-      } catch (MalformedURLException e) {
-        LOGGER.warn("Unable to parse STATSD_URL: {} (defaulting to no-op client)", urlSpec);
+      } catch (URISyntaxException e) {
+        LOGGER.warn("Unable to parse STATSD_URL: " + urlSpec + " (defaulting to no-op client)", e);
         INSTANCE = new NoOpStatsDClient();
       } catch (StatsDClientException e) {
         LOGGER.warn("An exception was thrown when initialising the statsd client (defaulting to no-op client)", e);
