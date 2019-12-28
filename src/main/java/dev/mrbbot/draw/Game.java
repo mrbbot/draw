@@ -31,7 +31,6 @@ public class Game implements Runnable {
   private final static String ASPECT_GAME_TIME = "gametime";
   private final static String ASPECT_ROUND_TIME = "roundtime";
   private final static String ASPECT_DRAW_EVENTS = "drawevents";
-  private int drawEventCount = 0;
 
   // Logger for this game (prefixed with game pin)
   private final Logger logger;
@@ -234,11 +233,8 @@ public class Game implements Runnable {
     // logger.info("{} {} event received: ({}, {}) -> ({}, {}) @ {}x", e.getColour(), e.getType(), e.getFromX(), e.getFromY(), e.getToX(), e.getToY(), e.getSize());
     // Forward draw events onto the host to be displayed
     host.sendEvent(Events.Sent.DRAW, (Object) rawDrawEvent);
-    // Send draw increment every 1/10th of the time
-    if(++drawEventCount >= 10) {
-      drawEventCount = 0;
-      Stats.count(ASPECT_DRAW_EVENTS, 1, 0.1);
-    }
+    // Send draw increment every 1/5th of the time
+    Stats.count(ASPECT_DRAW_EVENTS, 1, 0.2);
   }
 
   // Handler for when a player makes a guess
