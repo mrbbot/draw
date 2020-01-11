@@ -14,7 +14,7 @@
         </div>
         <h1 class="title is-1">DrawIt</h1>
         <h2 class="subtitle has-text-centered" style="max-width: 240px;">
-          ProjectByBrendan using Java, JavaScript & Vue
+          Project using Java, JavaScript & Vue
         </h2>
       </section>
       <section v-else-if="slide === 1" class="slide is-horizontal" key="1">
