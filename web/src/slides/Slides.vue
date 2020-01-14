@@ -38,14 +38,14 @@
           />
         </div>
       </section>
-      <section v-else-if="slide === 2" class="slide" key="2">
+      <!--<section v-else-if="slide === 2" class="slide" key="2">
         <h1 class="title is-2">Core Components</h1>
         <ol style="font-size: 1.5rem">
           <li>Drawing <i>(JavaScript)</i></li>
           <li>Game management <i>(Java)</i></li>
           <li>Transport between clients & the host</li>
         </ol>
-        <!--Hopefully time for a quick demo at the end-->
+        &lt;!&ndash;Hopefully time for a quick demo at the end&ndash;&gt;
       </section>
       <section v-else-if="slide === 3" class="slide" key="3">
         <h1 class="title is-2">Canvas</h1>
@@ -56,20 +56,20 @@
           </div>
           <canvas ref="canvas3" width="200" height="200" />
         </div>
-      </section>
-      <section v-else-if="slide === 4" class="slide" key="4">
+      </section>-->
+      <section v-else-if="slide === 2" class="slide" key="4">
         <h1 class="title is-2">Paint Brush: 1<sup>st</sup> Attempt</h1>
         <h2 class="subtitle">Listen for mouse move, draw on event</h2>
         <SimpleDrawCanvas mode="bad-brush" />
       </section>
-      <section v-else-if="slide === 5" class="slide" key="5">
+      <section v-else-if="slide === 3" class="slide" key="5">
         <h1 class="title is-2">Paint Brush: 2<sup>nd</sup> Attempt</h1>
         <h2 class="subtitle">
           Listen for mouse move, draw line between last & current coordinates
         </h2>
         <SimpleDrawCanvas mode="brush" />
       </section>
-      <section v-else-if="slide === 6" class="slide" key="6">
+      <section v-else-if="slide === 4" class="slide" key="6">
         <h1 class="title is-2">Paint Bucket</h1>
         <h2 class="subtitle">
           <a
@@ -81,15 +81,15 @@
           <img src="./img/paintbucket.gif" width="640" class="is-pixelated" />
         </div>
       </section>
-      <section v-else-if="slide === 7" class="slide" key="7">
-        <!--No way to disable anti-aliasing-->
+      <section v-else-if="slide === 5" class="slide" key="7">
         <h1 class="title is-2">Paint Bucket: 1<sup>st</sup> Attempt</h1>
+        <h2 class="subtitle"><!--No way to disable-->Anti-aliasing</h2>
         <SimpleDrawCanvas mode="bad-fill" />
         <h2 class="subtitle has-text-grey" style="margin-top: 1rem;">
           Shift: Blue / Alt: Fill
         </h2>
       </section>
-      <section v-else-if="slide === 8" class="slide" key="8">
+      <section v-else-if="slide === 6" class="slide" key="8">
         <h1 class="title is-2">Paint Bucket: 2<sup>nd</sup> Attempt</h1>
         <h2 class="subtitle">
           Check if colour in palette
@@ -99,7 +99,7 @@
           Shift: Blue / Alt: Fill
         </h2>
       </section>
-      <section v-else-if="slide === 9" class="slide" key="9">
+      <section v-else-if="slide === 7" class="slide" key="9">
         <h1 class="title is-2">Creating Games</h1>
         <ul style="font-size: 1.5rem; list-style: inherit;">
           <li>Each game has its own thread <i>(waiting for players)</i></li>
@@ -114,23 +114,23 @@
           <!--Not really a concern atm given number of simultaneous games-->
         </ul>
       </section>
-      <section v-else-if="slide === 10" class="slide" key="10">
+      <!--<section v-else-if="slide === 10" class="slide" key="10">
         <h1 class="title is-2">Thread Communication</h1>
         <Prism language="java" :code="code.slide10" />
-        <!--Also used for letting thread know when all players have guessed the word/or timeout-->
-      </section>
-      <section v-else-if="slide === 11" class="slide" key="11">
+        &lt;!&ndash;Also used for letting thread know when all players have guessed the word/or timeout&ndash;&gt;
+      </section>-->
+      <section v-else-if="slide === 8" class="slide" key="11">
         <h1 class="title is-2">Transport: Socket.IO</h1>
         <ul style="font-size: 1.5rem; list-style: inherit;">
           <li>Event bus over network</li>
           <li>Tries WebSockets, falls back to polling</li>
           <li>Rooms</li>
-          <li>
+          <!--<li>
             <code class="has-text-grey-dark">netty-socketio</code> Java Library
-          </li>
+          </li>-->
         </ul>
       </section>
-      <section v-else-if="slide === 12" class="slide" key="12">
+      <section v-else-if="slide === 9" class="slide" key="12">
         <div class="slide-row">
           <SimpleDrawCanvas
             mode="brush"
@@ -177,18 +177,19 @@
           Events: {{ slide12Events.length }}
         </p>
       </section>
-      <section v-else-if="slide === 13" class="slide" key="13">
+      <section v-else-if="slide === 10" class="slide" key="13">
         <h1 class="title is-2">Encoding</h1>
         <ul style="font-size: 1.5rem; list-style: inherit;">
           <li>
             Initially JSON
+            <i>(key data)</i>
             <!--lots of duplicated data for draw events: key names-->
           </li>
           <li>Socket.IO also supports binary messages</li>
           <li>Need language independent binary format</li>
         </ul>
       </section>
-      <section v-else-if="slide === 14" class="slide" key="14">
+      <section v-else-if="slide === 11" class="slide" key="14">
         <h1 class="title is-2">Protocol Buffers</h1>
         <div class="content" style="max-width: 600px;">
           <blockquote>
@@ -208,13 +209,13 @@
           <!--for JavaScript, using pbjs not google-protobuf for much smaller bundle size-->
         </div>
       </section>
-      <section v-else-if="slide === 15" class="slide" key="15">
+      <section v-else-if="slide === 12" class="slide" key="15">
         <div class="slide-row for-comparison">
           <Prism language="javascript" :code="code.slide15.proto" />
           <Prism language="javascript" :code="code.slide15.json" />
         </div>
       </section>
-      <section v-else-if="slide === 16" class="slide" key="16">
+      <section v-else-if="slide === 13" class="slide" key="16">
         <h1 class="title is-2 is-spaced">Demo Time</h1>
         <h2 class="subtitle">
           <a href="https://draw.mrbbot.dev">https://draw.mrbbot.dev</a>
@@ -361,7 +362,7 @@ export default {
   data() {
     return {
       slide: 0,
-      slideCount: 17,
+      slideCount: 14,
       direction: "slide-forward",
       slide12EventCount: 0,
       slide12Events: [],
@@ -406,29 +407,29 @@ export default {
       const setupFunction = this[`slide${this.slide}Setup`];
       if (setupFunction) setupFunction();
     },
-    slide3Setup() {
-      const ctx = this.$refs.canvas3.getContext("2d");
-      ctx.fillStyle = "red";
-      ctx.fillRect(10, 20, 30, 40);
-      ctx.lineCap = "round";
-      ctx.lineWidth = 10;
-      ctx.strokeStyle = "#0000FF";
-      ctx.beginPath();
-      ctx.moveTo(50, 50);
-      ctx.lineTo(100, 100);
-      ctx.stroke();
+    // slide3Setup() {
+    //   const ctx = this.$refs.canvas3.getContext("2d");
+    //   ctx.fillStyle = "red";
+    //   ctx.fillRect(10, 20, 30, 40);
+    //   ctx.lineCap = "round";
+    //   ctx.lineWidth = 10;
+    //   ctx.strokeStyle = "#0000FF";
+    //   ctx.beginPath();
+    //   ctx.moveTo(50, 50);
+    //   ctx.lineTo(100, 100);
+    //   ctx.stroke();
+    // },
+    slide8Setup() {
+      this.slide9Destroy();
     },
-    slide11Setup() {
-      this.slide12Destroy();
+    slide10Setup() {
+      this.slide9Destroy();
     },
-    slide13Setup() {
-      this.slide12Destroy();
-    },
-    slide12Setup() {
+    slide9Setup() {
       this.slide12RawThrottleAmount = "0";
       this.slide12AnimationFrame = requestAnimationFrame(this.slide12Animation);
     },
-    slide12Destroy() {
+    slide9Destroy() {
       cancelAnimationFrame(this.slide12AnimationFrame);
       this.slide12Events = [];
     },
